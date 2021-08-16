@@ -1,19 +1,21 @@
-import "./App.scss";
+import "./styles/App.scss";
 import React from "react";
-import accurateInterval from "./accurateInterval";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faStop, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import accurateInterval from "./functions/accurateInterval";
 import TimerLengthControl from "./TimerLengthControl";
+import Timer from "./Timer";
+import TimerControls from "./TimerControls";
+import Clock from "./Clock";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       breakLength: 5,
-      sessionLength: 25,
-      timerType: "session",
+      sessionLength: 20,
+      timerType: "Session",
       timerState: "stopped",
-      timer: 1500,
+      timer: 1200,
       intervalID: "",
       alarmColor: { color: "yellowGreen" },
     };
@@ -32,21 +34,21 @@ class App extends React.Component {
     this.setBreakLength = this.setBreakLength.bind(this);
   }
 
-  setBreakLength(e) {
+  setBreakLength({ currentTarget }) {
     this.lengthControl(
       "breakLength",
-      e.currentTarget.value,
+      currentTarget.value,
       this.state.breakLength,
-      "session"
+      "Session"
     );
   }
 
-  setSessionLength(e) {
+  setSessionLength({ currentTarget }) {
     this.lengthControl(
       "sessionLength",
-      e.currentTarget.value,
+      currentTarget.value,
       this.state.sessionLength,
-      "break"
+      "Break"
     );
   }
 
@@ -112,14 +114,22 @@ class App extends React.Component {
       if (this.state.intervalID) {
         this.state.intervalID.cancel();
       }
-      if (this.state.timerType === "session") {
+      if (this.state.timerType === "Session") {
         this.beginCountDown();
-        this.switchTimer(this.state.breakLength * 60, "break");
+        this.switchTimer(this.state.breakLength * 60, "Break");
       } else {
         this.beginCountDown();
-        this.switchTimer(this.state.sessionLength * 60, "session");
+        this.switchTimer(this.state.sessionLength * 60, "Session");
       }
     }
+  }
+
+  switchTimer(num, str) {
+    this.setState({
+      timer: num,
+      timerType: str,
+      alarmColor: { color: "yellowGreen" },
+    });
   }
 
   warning(_timer) {
@@ -136,14 +146,6 @@ class App extends React.Component {
     }
   }
 
-  switchTimer(num, str) {
-    this.setState({
-      timer: num,
-      timerType: str,
-      alarmColor: { color: "yellowGreen" },
-    });
-  }
-
   clockpify() {
     let minutes = Math.floor(this.state.timer / 60);
     let seconds = this.state.timer - minutes * 60;
@@ -155,10 +157,10 @@ class App extends React.Component {
   reset() {
     this.setState({
       breakLength: 5,
-      sessionLength: 25,
-      timerType: "session",
+      sessionLength: 20,
+      timerType: "Session",
       timerState: "stopped",
-      timer: 1500,
+      timer: 1200,
       intervalID: "",
       alarmColor: { color: "yellowGreen" },
     });
@@ -172,36 +174,27 @@ class App extends React.Component {
   render() {
     return (
       <main>
+        <Clock />
         <div className="title">HONG VAN's Clock !!!</div>
         <TimerLengthControl
           length={this.state.sessionLength}
           title="Session Length"
           onClick={this.setSessionLength}
         />
-
         <TimerLengthControl
           length={this.state.breakLength}
           title="Break Length"
           onClick={this.setBreakLength}
         />
-
-        <div className="timer" style={this.state.alarmColor}>
-          <div className="timer-wraper">
-            <div id="timer-label">{this.state.timerType}</div>
-            <div id="time-left">{this.clockpify()}</div>
-          </div>
-        </div>
-
-        <div className="timer-control">
-          <button onClick={this.timerControl}>
-            <FontAwesomeIcon className="icon" icon={faPlay} />
-            <FontAwesomeIcon className="icon" icon={faStop} />
-          </button>
-          <button onClick={this.reset}>
-            <FontAwesomeIcon className="icon" icon={faSyncAlt} />
-          </button>
-        </div>
-
+        <Timer
+          alarmColor={this.state.alarmColor}
+          timerType={this.state.timerType}
+          clockpify={this.clockpify}
+        />
+        <TimerControls
+          handlePlay={this.timerControl}
+          handleReset={this.reset}
+        />
         <audio
           preload="auto"
           ref={(audio) => {

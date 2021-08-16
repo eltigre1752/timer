@@ -1,26 +1,32 @@
-import "./App.scss";
+import "./styles/App.scss";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+} from "@fortawesome/free-solid-svg-icons";
 
-class TimerLengthControl extends React.Component {
-  render() {
-    return (
-      <div className="length-control">
-        <div>{this.props.title}</div>
+function TimerLengthControl(props) {
+  return (
+    <div className="length-control">
+      <div>{props.title}</div>
 
-        <button value="-" className="btn-level" onClick={this.props.onClick}>
-          <FontAwesomeIcon className="icon" icon={faArrowDown} />
-        </button>
+      <button value="+" className="btn-level" onClick={props.onClick}>
+        <FontAwesomeIcon className="icon lengthBtn" icon={faAngleDoubleUp} />
+      </button>
 
-        <div className="btn-level">{this.props.length}</div>
+      <div className="btn-level">{props.length}</div>
 
-        <button value="+" className="btn-level" onClick={this.props.onClick}>
-          <FontAwesomeIcon className="icon" icon={faArrowUp} />
-        </button>
-      </div>
-    );
-  }
+      <button
+        value="-"
+        className="btn-level"
+        onClick={props.onClick}
+        disabled={props.length === 1}
+      >
+        <FontAwesomeIcon className="icon lengthBtn2" icon={faAngleDoubleDown} />
+      </button>
+    </div>
+  );
 }
 
 export default TimerLengthControl;
